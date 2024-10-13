@@ -70,6 +70,9 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
    Replace `C:\path\to\your\sample.wav` with the actual path to your audio file, and `C:\Users\YourUsername\Desktop` with where you want to save the output.
 
 
+### Quick start for Linux Users
+1. You know what to do folks. Welcome home.
+
 ## For Developers
 
 - [Overview](#overview)
