@@ -49,7 +49,7 @@ jobs:
         GOOS: ${{ matrix.goos }}
         GOARCH: ${{ matrix.goarch }}
       run: |
-        BINARY_NAME=move-tool-${{ matrix.artifact_name }}
+        BINARY_NAME=move-tool
         if [ "${{ matrix.goos }}" = "windows" ]; then
           BINARY_NAME="${BINARY_NAME}.exe"
         fi
@@ -58,7 +58,7 @@ jobs:
     - name: Zip artifact
       run: |
         ZIP_NAME=move-tool-${{ matrix.artifact_name }}.zip
-        BINARY_NAME=move-tool-${{ matrix.goos }}-${{ matrix.goarch }}
+        BINARY_NAME=move-tool
         if [ "${{ matrix.goos }}" = "windows" ]; then
           BINARY_NAME="${BINARY_NAME}.exe"
         fi
