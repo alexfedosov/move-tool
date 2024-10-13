@@ -30,7 +30,7 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 
 - **Note**: The Move Tool CLI is not signed, which means macOS may prevent it from running due to security measures. To run the tool, you'll need to follow these additional steps:
 
-  - Right-click on the `move-tool` executable and select "Open" from the context menu. You'll see a security warning. Click "Open" to run the tool for the first time. 【1】
+  - Right-click on the `move-tool` executable and select "Open" from the context menu. You'll see a security warning. Click "Open" to run the tool for the first time.
 
   - If the above method doesn't work, you can try the following:
     1. Open "System Preferences" > "Security & Privacy" > "General" tab.
