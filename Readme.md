@@ -1,11 +1,17 @@
 # Move tool
 
-## Overview
-
 A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 
-## Table of Contents
+## TLDR; Quick start
+1. Download app for your platform from [the latest release](https://github.com/alexfedosov/move-tool/releases/latest)
+2. Make an audio sample contaning N parts (up to 16). Let's say you got a sample containing 16 slices of the equal length
+3. Run in your terminal app ```move-tool slice -i my-long-sample.wav -n 16 -o /Users/alex/Desktop ```
+4. Move tool will slice the original sample into 16 pieces and create a Move/Note preset with random name at `/Users/alex/Desktop/`
+5. Star this repo
 
+---
+
+## Table of Contents
 - [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
