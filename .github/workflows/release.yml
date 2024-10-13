@@ -51,7 +51,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}
-        path: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}*
+        path: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}.zip
 
   release:
     needs: build
