@@ -38,7 +38,7 @@ jobs:
         fi
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         overwrite: true
         path: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}*
@@ -48,10 +48,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v4.1.8
+      uses: actions/download-artifact@v4
 
     - name: Release
-      uses: softprops/action-gh-release@v2.0.8
+      uses: softprops/action-gh-release@v2
       with:
         name: ${{ github.event.inputs.version || github.ref }}
         files: |
