@@ -21,7 +21,7 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 5. If you find this tool helpful, please star the repository!
 
 ### Quick start for macOS Users
-1. Download the macOS version of Move Tool from [the latest release](https://github.com/alexfedosov/move-tool/releases/latest).
+1. Download the latest macOS version of Move Tool for [Apple Silicon (M chips)](https://github.com/alexfedosov/move-tool/releases/latest/download/move-tool-macos-apple-silicon.zip) or [Intel](https://github.com/alexfedosov/move-tool/releases/latest/download/move-tool-macos-intel.zip)
 2. Open Finder and navigate to your Downloads folder.
 3. Double-click the downloaded file (it should be named something like `move-tool-macos.zip`) to unzip it.
 4. Open Terminal (you can find it by pressing Cmd + Space and typing "Terminal").
@@ -33,7 +33,7 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
    Replace `/path/to/your/sample.wav` with the actual path to your audio file, and `/Users/your-username/Desktop` with where you want to save the output.
 
 ### Quick start for Windows Users
-1. Download the Windows version of Move Tool from [the latest release](https://github.com/alexfedosov/move-tool/releases/latest).
+1. Download the latest Windows version of Move Tool for [Intel/AMD processors](https://github.com/alexfedosov/move-tool/releases/latest/download/move-tool-windows-amd64.zip) or [ARM](https://github.com/alexfedosov/move-tool/releases/latest/download/move-tool-windows-arm64.zip)
 2. Open File Explorer and navigate to your Downloads folder.
 3. Right-click the downloaded file (it should be named something like `move-tool-windows.zip`) and select "Extract All". Choose a location to extract the files.
 4. Open Command Prompt (you can find it by pressing Win + R, typing "cmd", and pressing Enter).
