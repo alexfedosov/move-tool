@@ -32,15 +32,25 @@ jobs:
         GOOS: ${{ matrix.goos }}
         GOARCH: ${{ matrix.goarch }}
       run: |
-        go build -v -o move-tool-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.event.inputs.version || github.ref }}
+        BINARY_NAME=move-tool-${{ matrix.goos }}-${{ matrix.goarch }}
         if [ "${{ matrix.goos }}" = "windows" ]; then
-          mv move-tool-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.event.inputs.version || github.ref }} move-tool-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.event.inputs.version || github.ref }}.exe
+          BINARY_NAME="${BINARY_NAME}.exe"
         fi
+        go build -v -o ${BINARY_NAME}
+        
+    - name: Zip artifact
+      run: |
+        ZIP_NAME=move-tool-${{ matrix.goos }}-${{ matrix.goarch }}.zip
+        BINARY_NAME=move-tool-${{ matrix.goos }}-${{ matrix.goarch }}
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          BINARY_NAME="${BINARY_NAME}.exe"
+        fi
+        zip ${ZIP_NAME} ${BINARY_NAME}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.event.inputs.version || github.ref }}
+        name: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}
         path: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   release:
