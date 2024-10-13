@@ -40,6 +40,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
+        name: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}-${{ github.event.inputs.version || github.ref }}
         path: move-tool-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   release:
@@ -48,13 +49,22 @@ jobs:
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+        
+    - name: Display structure of downloaded files
+      run: ls -R artifacts
+
+    - name: Prepare release files
+      run: |
+        mkdir release_files
+        find artifacts -type f -name "move-tool-*" -exec cp {} release_files/ \;
 
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ github.event.inputs.version || github.ref }}
-        files: |
-          move-tool-*
+        files: release_files/*
         tag_name: ${{ github.event.inputs.version || github.ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
