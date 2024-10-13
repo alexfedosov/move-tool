@@ -8,10 +8,12 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 3. Run in your terminal app ```move-tool slice -i my-long-sample.wav -n 16 -o /Users/alex/Desktop ```
 4. Move tool will slice the original sample into 16 pieces and create a Move/Note preset with random name at `/Users/alex/Desktop/`
 5. Star this repo
+6. Keep reading if you want to contribute
 
----
 
-## Table of Contents
+
+# Read this if you want to contribute
+
 - [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
