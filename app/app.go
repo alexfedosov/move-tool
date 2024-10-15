@@ -37,5 +37,10 @@ func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numb
 		return err
 	}
 
+	err = removeDirectory(samplesFolderPath)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
