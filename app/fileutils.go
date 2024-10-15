@@ -75,3 +75,7 @@ func writePresetFile(preset *ablmodels.DevicePreset, presetFolderPath string) er
 	}
 	return nil
 }
+
+func removeDirectory(path string) error {
+	return os.RemoveAll(path)
+}
