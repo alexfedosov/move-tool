@@ -9,7 +9,7 @@ import (
 	"path"
 )
 
-func writeAudioFileSlices(filePath string, outputDir string, parts int) (*[]ablmodels.AudioFile, error) {
+func writeAudioFileSlices(filePath string, outputDir string, parts int, filenamePrefix string) (*[]ablmodels.AudioFile, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("could not open source file: %v", err)
@@ -45,7 +45,7 @@ func writeAudioFileSlices(filePath string, outputDir string, parts int) (*[]ablm
 		}
 
 		// Generate output file path
-		partFileName := fmt.Sprintf("part_%d.wav", i+1)
+		partFileName := fmt.Sprintf("%s_part_%d.wav", filenamePrefix, i+1)
 		outputFilePath := path.Join(outputDir, partFileName)
 		partFile, err := os.Create(outputFilePath)
 		if err != nil {
@@ -64,7 +64,7 @@ func writeAudioFileSlices(filePath string, outputDir string, parts int) (*[]ablm
 		}
 
 		partFile.Close()
-		fmt.Printf("Part %d saved as %s\n", i+1, outputFilePath)
+		fmt.Printf("Slice %d saved as %s\n", i+1, outputFilePath)
 		sampleFilePath := fmt.Sprintf("Samples/%s", partFileName)
 		result[i] = ablmodels.AudioFile{
 			FilePath: &sampleFilePath,
