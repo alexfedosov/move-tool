@@ -21,7 +21,7 @@ func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numb
 	if err != nil {
 		return err
 	}
-	samples, err := writeAudioFileSlices(inputFilePath, samplesFolderPath, numberOfSlices)
+	samples, err := writeAudioFileSlices(inputFilePath, samplesFolderPath, numberOfSlices, presetName)
 	if err != nil {
 		return err
 	}
