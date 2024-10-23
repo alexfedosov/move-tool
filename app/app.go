@@ -5,8 +5,21 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"move-tool/ablmodels"
 	"strings"
-	"regexp"
 )
+
+func sanitizePresetName(presetName string) string {
+	var result strings.Builder
+
+	for _, char := range presetName {
+		if (char >= 'a' && char <= 'z') || char == '_' {
+			result.WriteRune(char)
+		} else {
+			result.WriteRune('_')
+		}
+	}
+
+	return result.String()
+}
 
 func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numberOfSlices int) (err error) {
 	err = gofakeit.Seed(0)
@@ -14,9 +27,7 @@ func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numb
 		return err
 	}
 	presetName := strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
-	
-	re := regexp.MustCompile(`[^a-z]+`)
-	presetName = re.ReplaceAllString(strings.ToLower(presetName), "_")
+	presetName = sanitizePresetName(presetName)
 	
 	presetFolderPath, err := createFolderIfNotExist(outputFolderPath, presetName)
 	if err != nil {
