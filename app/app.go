@@ -5,6 +5,7 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"move-tool/ablmodels"
 	"strings"
+	"regexp"
 )
 
 func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numberOfSlices int) (err error) {
@@ -13,6 +14,10 @@ func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numb
 		return err
 	}
 	presetName := strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
+	
+	re := regexp.MustCompile(`[^a-z]+`)
+	presetName = re.ReplaceAllString(strings.ToLower(presetName), "_")
+	
 	presetFolderPath, err := createFolderIfNotExist(outputFolderPath, presetName)
 	if err != nil {
 		return err
