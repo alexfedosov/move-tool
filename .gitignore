@@ -148,4 +148,12 @@ Temporary Items
 # iCloud generated files
 *.icloud
 
+# Go binaries
+move-tool
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
 # End of https://www.toptal.com/developers/gitignore/api/goland,macos
