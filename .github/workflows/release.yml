@@ -84,7 +84,7 @@ jobs:
         zip ${ZIP_NAME} ${BINARY_NAME}
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: move-tool-${{ matrix.artifact_name }}
         path: move-tool-${{ matrix.artifact_name }}.zip
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: artifacts
         
