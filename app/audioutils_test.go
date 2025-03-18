@@ -27,7 +27,7 @@ func TestWriteAudioFileSlices(t *testing.T) {
 	// Test with 4 slices
 	filenamePrefix := "test_prefix"
 	numberOfSlices := 4
-	
+
 	audioFiles, err := writeAudioFileSlices(inputFilePath, outputDir, numberOfSlices, filenamePrefix)
 	require.NoError(t, err, "writeAudioFileSlices should not fail")
 	require.NotNil(t, audioFiles, "writeAudioFileSlices should not return nil audioFiles")
@@ -37,13 +37,13 @@ func TestWriteAudioFileSlices(t *testing.T) {
 	for i := 0; i < numberOfSlices; i++ {
 		partNum := i + 1
 		sliceFilename := filepath.Join(outputDir, filenamePrefix+"_part_"+fmt.Sprintf("%d", partNum)+".wav")
-		
+
 		// Check if the file was created on disk
 		_, err = os.Stat(sliceFilename)
 		assert.False(t, os.IsNotExist(err), "Slice file should exist at %s", sliceFilename)
-		
+
 		require.NotNil(t, (*audioFiles)[i].FilePath, "Audio file %d should not have nil FilePath", i)
-		
+
 		expectedPath := "Samples/" + filenamePrefix + "_part_" + fmt.Sprintf("%d", partNum) + ".wav"
 		assert.Equal(t, expectedPath, *(*audioFiles)[i].FilePath, "FilePath should match expected pattern")
 		assert.Greater(t, (*audioFiles)[i].Duration, 0.0, "Duration should be positive")

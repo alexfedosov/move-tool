@@ -76,7 +76,7 @@ func TestSliceSampleIntoDrumRackWithCustomPresetName(t *testing.T) {
 
 	// Test with custom preset name
 	customPresetName := "my_custom_preset"
-	
+
 	err = SliceSampleIntoDrumRack(inputFilePath, outputDir, 4, customPresetName)
 	require.NoError(t, err, "SliceSampleIntoDrumRack should not fail")
 
@@ -91,18 +91,18 @@ func createTestWAVFile(t *testing.T, filePath string, sampleRate int) {
 	// Create a minimal WAV file (44 bytes header + 8 bytes of sample data)
 	header := []byte{
 		'R', 'I', 'F', 'F', // ChunkID
-		52, 0, 0, 0,        // ChunkSize (36 + SubChunk2Size)
+		52, 0, 0, 0, // ChunkSize (36 + SubChunk2Size)
 		'W', 'A', 'V', 'E', // Format
 		'f', 'm', 't', ' ', // Subchunk1ID
-		16, 0, 0, 0,        // Subchunk1Size
-		1, 0,               // AudioFormat (1 = PCM)
-		1, 0,               // NumChannels
+		16, 0, 0, 0, // Subchunk1Size
+		1, 0, // AudioFormat (1 = PCM)
+		1, 0, // NumChannels
 		byte(sampleRate & 0xff), byte((sampleRate >> 8) & 0xff), byte((sampleRate >> 16) & 0xff), byte((sampleRate >> 24) & 0xff), // SampleRate
 		byte(sampleRate & 0xff), byte((sampleRate >> 8) & 0xff), byte((sampleRate >> 16) & 0xff), byte((sampleRate >> 24) & 0xff), // ByteRate (SampleRate * NumChannels * BitsPerSample/8)
-		2, 0,               // BlockAlign (NumChannels * BitsPerSample/8)
-		16, 0,              // BitsPerSample
+		2, 0, // BlockAlign (NumChannels * BitsPerSample/8)
+		16, 0, // BitsPerSample
 		'd', 'a', 't', 'a', // Subchunk2ID
-		8, 0, 0, 0,         // Subchunk2Size (NumSamples * NumChannels * BitsPerSample/8)
+		8, 0, 0, 0, // Subchunk2Size (NumSamples * NumChannels * BitsPerSample/8)
 		0, 0, 0, 0, 0, 0, 0, 0, // Sample data (8 bytes of silence)
 	}
 
