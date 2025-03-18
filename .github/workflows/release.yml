@@ -12,8 +12,27 @@ on:
         default: 'v1.0.0'
         
 jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5.0.2
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test -v ./...
+
   build:
     name: Build and Release
+    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
