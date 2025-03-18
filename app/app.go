@@ -32,8 +32,8 @@ func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numb
 		presetName = customPresetName
 	} else {
 		presetName = strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
+		presetName = sanitizePresetName(presetName)
 	}
-	presetName = sanitizePresetName(presetName)
 	
 	presetFolderPath, err := createFolderIfNotExist(outputFolderPath, presetName)
 	if err != nil {
