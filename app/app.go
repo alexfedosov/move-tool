@@ -21,13 +21,19 @@ func sanitizePresetName(presetName string) string {
 	return result.String()
 }
 
-func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numberOfSlices int) (err error) {
+func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numberOfSlices int, customPresetName string) (err error) {
 	err = gofakeit.Seed(0)
 	if err != nil {
 		return err
 	}
-	presetName := strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
-	presetName = sanitizePresetName(presetName)
+	
+	var presetName string
+	if customPresetName != "" {
+		presetName = customPresetName
+	} else {
+		presetName = strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
+		presetName = sanitizePresetName(presetName)
+	}
 	
 	presetFolderPath, err := createFolderIfNotExist(outputFolderPath, presetName)
 	if err != nil {
