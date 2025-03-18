@@ -6,17 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestRootCommand verifies that the root cobra command is properly initialized
+// with correct values and contains the expected subcommands.
 func TestRootCommand(t *testing.T) {
-	// Test that the root command exists
 	assert.NotNil(t, rootCmd, "Root command should not be nil")
-
-	// Test the root command has a use value
 	assert.NotEmpty(t, rootCmd.Use, "Root command should have a Use value")
-
-	// Test the root command has a short description
 	assert.NotEmpty(t, rootCmd.Short, "Root command should have a Short description")
 
-	// Test that the root command has the slice command as a subcommand
 	found := false
 	for _, cmd := range rootCmd.Commands() {
 		if cmd.Use == "slice" {

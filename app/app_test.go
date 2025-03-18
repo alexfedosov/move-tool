@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestSanitizePresetName verifies that preset names are properly sanitized
+// by replacing non-lowercase-letters and non-underscores with underscores.
 func TestSanitizePresetName(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -60,8 +62,9 @@ func TestSanitizePresetName(t *testing.T) {
 	}
 }
 
+// TestSliceSampleIntoDrumRackWithCustomPresetName verifies that slicing with a custom preset name works
+// by creating temporary files and checking if the preset bundle is generated correctly.
 func TestSliceSampleIntoDrumRackWithCustomPresetName(t *testing.T) {
-	// Create temporary directories for testing
 	inputDir, err := os.MkdirTemp("", "test-input")
 	require.NoError(t, err, "Failed to create input directory")
 	defer os.RemoveAll(inputDir)
@@ -70,25 +73,22 @@ func TestSliceSampleIntoDrumRackWithCustomPresetName(t *testing.T) {
 	require.NoError(t, err, "Failed to create output directory")
 	defer os.RemoveAll(outputDir)
 
-	// Create a simple WAV file for testing
 	inputFilePath := filepath.Join(inputDir, "test.wav")
 	createTestWAVFile(t, inputFilePath, 44100)
 
-	// Test with custom preset name
 	customPresetName := "my_custom_preset"
 
 	err = SliceSampleIntoDrumRack(inputFilePath, outputDir, 4, customPresetName)
 	require.NoError(t, err, "SliceSampleIntoDrumRack should not fail")
 
-	// Check if the preset bundle was created
 	bundlePath := filepath.Join(outputDir, customPresetName+".ablpresetbundle")
 	_, err = os.Stat(bundlePath)
 	assert.False(t, os.IsNotExist(err), "Preset bundle should exist at %s", bundlePath)
 }
 
-// Helper function to create a test WAV file with minimal valid data
+// createTestWAVFile generates a minimal valid WAV file for testing
+// with the specified sample rate and 8 bytes of silent sample data.
 func createTestWAVFile(t *testing.T, filePath string, sampleRate int) {
-	// Create a minimal WAV file (44 bytes header + 8 bytes of sample data)
 	header := []byte{
 		'R', 'I', 'F', 'F', // ChunkID
 		52, 0, 0, 0, // ChunkSize (36 + SubChunk2Size)
