@@ -13,6 +13,7 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
      ```
      ./move-tool slice -i /path/to/your/sample.wav -n 16 -o /Users/your-username/Desktop
      ```
+     ![Output](gif/move-tool.gif)
    - For Windows:
      ```
      move-tool.exe slice -i C:\path\to\your\sample.wav -n 16 -o C:\Users\YourUsername\Desktop
