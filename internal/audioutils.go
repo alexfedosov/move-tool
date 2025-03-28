@@ -1,10 +1,10 @@
-package app
+package internal
 
 import (
 	"fmt"
+	"github.com/alexfedosov/move-tool/internal/ablmodels"
 	"github.com/go-audio/audio"
 	"github.com/go-audio/wav"
-	"move-tool/ablmodels"
 	"os"
 	"path"
 )

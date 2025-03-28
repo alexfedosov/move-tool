@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/alexfedosov/move-tool/internal"
 	"github.com/spf13/cobra"
-	"move-tool/app"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 		Short: "Slices long sample into drum rack",
 		Long:  `Slice long sample into given number of equal numberOfSlices and creates a drum rack preset`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.SliceSampleIntoDrumRack(input, output, numberOfSlices, presetName)
+			return internal.SliceSampleIntoDrumRack(input, output, numberOfSlices, presetName)
 		},
 	}
 )
