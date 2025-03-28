@@ -1,8 +1,8 @@
-package app
+package internal
 
 import (
 	"fmt"
-	"github.com/alexfedosov/move-tool/ablmodels"
+	"github.com/alexfedosov/move-tool/internal/ablmodels"
 	"github.com/brianvoe/gofakeit/v7"
 	"strings"
 )

@@ -1,7 +1,7 @@
-package app
+package internal
 
 import (
-	"github.com/alexfedosov/move-tool/ablmodels"
+	ablmodels2 "github.com/alexfedosov/move-tool/internal/ablmodels"
 	"os"
 	"path/filepath"
 	"testing"
@@ -57,13 +57,13 @@ func TestWritePresetFile(t *testing.T) {
 	defer os.RemoveAll(testDir) // Clean up after test
 
 	filePath := "TestPath"
-	audioFile := []ablmodels.AudioFile{
+	audioFile := []ablmodels2.AudioFile{
 		{
 			FilePath: &filePath,
 			Duration: 1000.0,
 		},
 	}
-	preset := ablmodels.NewDrumRackDevicePresetWithSamples(audioFile)
+	preset := ablmodels2.NewDrumRackDevicePresetWithSamples(audioFile)
 
 	err = writePresetFile(preset, testDir)
 	require.NoError(t, err, "writePresetFile should not fail")

@@ -1,10 +1,10 @@
-package app
+package internal
 
 import (
 	"archive/zip"
 	"encoding/json"
 	"fmt"
-	"github.com/alexfedosov/move-tool/ablmodels"
+	"github.com/alexfedosov/move-tool/internal/ablmodels"
 	"io"
 	"os"
 	"path"
