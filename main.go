@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"move-tool/cmd"
+	"github.com/alexfedosov/move-tool/cmd"
 )
 
 func main() {

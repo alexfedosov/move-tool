@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/alexfedosov/move-tool/app"
 	"github.com/spf13/cobra"
-	"move-tool/app"
 )
 
 var (

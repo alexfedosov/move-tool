@@ -1,7 +1,7 @@
 package app
 
 import (
-	"move-tool/ablmodels"
+	"github.com/alexfedosov/move-tool/ablmodels"
 	"os"
 	"path/filepath"
 	"testing"

@@ -2,8 +2,8 @@ package app
 
 import (
 	"fmt"
+	"github.com/alexfedosov/move-tool/ablmodels"
 	"github.com/brianvoe/gofakeit/v7"
-	"move-tool/ablmodels"
 	"strings"
 )
 
