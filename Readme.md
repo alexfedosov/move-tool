@@ -95,6 +95,8 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 move-tool slice -i <file path> -n <number of samples> -o <output directory>
 ```
 
+Ensure that the output directory exists before running `move-tool`.
+
 ### Contributing
 
 1. Fork the repository.
