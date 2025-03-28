@@ -82,29 +82,17 @@ A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 
 ### Installation
 
-1. Ensure that you have [Go 1.22](https://golang.org/dl/) installed.
-2. Clone the repo:
+1. Ensure that you have [Go 1.22](https://golang.org/dl/) (or newer) installed.
+2. Install:
 
     ```sh
-    git clone https://github.com/alexfedosov/move-tool.git
-    ```
-
-3. Navigate to the project directory:
-
-    ```sh
-    cd move-tool
-    ```
-
-4. Install dependencies:
-
-    ```sh
-    go mod tidy
+    go install github.com/alexfedosov/move-tool@latest
     ```
 
 ### Usage
 
 ```sh
-go run . slice -i <file path> -n <number of samples> -o <output directory>
+move-tool slice -i <file path> -n <number of samples> -o <output directory>
 ```
 
 ### Contributing
