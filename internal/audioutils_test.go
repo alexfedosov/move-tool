@@ -46,3 +46,21 @@ func TestWriteAudioFileSlices(t *testing.T) {
 		assert.Greater(t, (*audioFiles)[i].Duration, 0.0, "Duration should be positive")
 	}
 }
+
+// TestWriteAudioFileSlicesWithNonExistentFile verifies that the function correctly handles
+// errors when the input file doesn't exist.
+func TestWriteAudioFileSlicesWithNonExistentFile(t *testing.T) {
+	outputDir, err := os.MkdirTemp("", "test-output")
+	require.NoError(t, err, "Failed to create output directory")
+	defer os.RemoveAll(outputDir)
+
+	// Use a non-existent file path
+	nonExistentFilePath := "/path/to/nonexistent/file.wav"
+
+	audioFiles, err := writeAudioFileSlices(nonExistentFilePath, outputDir, 4, "test_prefix")
+
+	// Verify that the function returns an error
+	assert.Error(t, err, "writeAudioFileSlices should fail with non-existent file")
+	assert.Nil(t, audioFiles, "audioFiles should be nil when an error occurs")
+	assert.Contains(t, err.Error(), "could not open source file", "Error message should indicate the file couldn't be opened")
+}

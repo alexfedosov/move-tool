@@ -52,6 +52,16 @@ func TestSanitizePresetName(t *testing.T) {
 			input:    "",
 			expected: "",
 		},
+		{
+			name:     "all_uppercase_letters",
+			input:    "ABCDEFG",
+			expected: "_______",
+		},
+		{
+			name:     "mixed_case_with_valid_chars",
+			input:    "aBcDeFg_123",
+			expected: "a_c_e_g____",
+		},
 	}
 
 	for _, tt := range tests {
