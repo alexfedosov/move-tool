@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestSanitizePresetName verifies that preset names are properly sanitized
-// by replacing non-lowercase-letters and non-underscores with underscores.
 func TestSanitizePresetName(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -72,48 +70,71 @@ func TestSanitizePresetName(t *testing.T) {
 	}
 }
 
-// TestSliceSampleIntoDrumRackWithCustomPresetName verifies that slicing with a custom preset name works
-// by creating temporary files and checking if the preset bundle is generated correctly.
 func TestSliceSampleIntoDrumRackWithCustomPresetName(t *testing.T) {
-	inputDir, err := os.MkdirTemp("", "test-input")
-	require.NoError(t, err, "Failed to create input directory")
-	defer os.RemoveAll(inputDir)
+	fixture := newSliceDrumRackFixture(t)
+	customPresetName := "my_custom_preset"
 
-	outputDir, err := os.MkdirTemp("", "test-output")
-	require.NoError(t, err, "Failed to create output directory")
-	defer os.RemoveAll(outputDir)
+	err := SliceSampleIntoDrumRack(fixture.InputFilePath, fixture.OutputDir, 4, customPresetName)
+	require.NoError(t, err, "SliceSampleIntoDrumRack should not fail")
 
+	fixture.assertPresetBundleExists(t, customPresetName)
+}
+
+type sliceDrumRackFixture struct {
+	InputFilePath string
+	OutputDir     string
+}
+
+func newSliceDrumRackFixture(t *testing.T) sliceDrumRackFixture {
+	t.Helper()
+
+	inputDir := mustCreateTempDir(t, "test-input")
+	outputDir := mustCreateTempDir(t, "test-output")
 	inputFilePath := filepath.Join(inputDir, "test.wav")
 	createTestWAVFile(t, inputFilePath, 44100)
 
-	customPresetName := "my_custom_preset"
+	return sliceDrumRackFixture{
+		InputFilePath: inputFilePath,
+		OutputDir:     outputDir,
+	}
+}
 
-	err = SliceSampleIntoDrumRack(inputFilePath, outputDir, 4, customPresetName)
-	require.NoError(t, err, "SliceSampleIntoDrumRack should not fail")
+func mustCreateTempDir(t *testing.T, pattern string) string {
+	t.Helper()
 
-	bundlePath := filepath.Join(outputDir, customPresetName+".ablpresetbundle")
-	_, err = os.Stat(bundlePath)
+	dir, err := os.MkdirTemp("", pattern)
+	require.NoError(t, err, "Failed to create temp directory")
+	t.Cleanup(func() {
+		os.RemoveAll(dir)
+	})
+
+	return dir
+}
+
+func (f sliceDrumRackFixture) assertPresetBundleExists(t *testing.T, customPresetName string) {
+	t.Helper()
+
+	bundlePath := filepath.Join(f.OutputDir, customPresetName+".ablpresetbundle")
+	_, err := os.Stat(bundlePath)
 	assert.False(t, os.IsNotExist(err), "Preset bundle should exist at %s", bundlePath)
 }
 
-// createTestWAVFile generates a minimal valid WAV file for testing
-// with the specified sample rate and 8 bytes of silent sample data.
 func createTestWAVFile(t *testing.T, filePath string, sampleRate int) {
 	header := []byte{
-		'R', 'I', 'F', 'F', // ChunkID
-		52, 0, 0, 0, // ChunkSize (36 + SubChunk2Size)
-		'W', 'A', 'V', 'E', // Format
-		'f', 'm', 't', ' ', // Subchunk1ID
-		16, 0, 0, 0, // Subchunk1Size
-		1, 0, // AudioFormat (1 = PCM)
-		1, 0, // NumChannels
-		byte(sampleRate & 0xff), byte((sampleRate >> 8) & 0xff), byte((sampleRate >> 16) & 0xff), byte((sampleRate >> 24) & 0xff), // SampleRate
-		byte(sampleRate & 0xff), byte((sampleRate >> 8) & 0xff), byte((sampleRate >> 16) & 0xff), byte((sampleRate >> 24) & 0xff), // ByteRate (SampleRate * NumChannels * BitsPerSample/8)
-		2, 0, // BlockAlign (NumChannels * BitsPerSample/8)
-		16, 0, // BitsPerSample
-		'd', 'a', 't', 'a', // Subchunk2ID
-		8, 0, 0, 0, // Subchunk2Size (NumSamples * NumChannels * BitsPerSample/8)
-		0, 0, 0, 0, 0, 0, 0, 0, // Sample data (8 bytes of silence)
+		'R', 'I', 'F', 'F',
+		52, 0, 0, 0,
+		'W', 'A', 'V', 'E',
+		'f', 'm', 't', ' ',
+		16, 0, 0, 0,
+		1, 0,
+		1, 0,
+		byte(sampleRate & 0xff), byte((sampleRate >> 8) & 0xff), byte((sampleRate >> 16) & 0xff), byte((sampleRate >> 24) & 0xff),
+		byte(sampleRate & 0xff), byte((sampleRate >> 8) & 0xff), byte((sampleRate >> 16) & 0xff), byte((sampleRate >> 24) & 0xff),
+		2, 0,
+		16, 0,
+		'd', 'a', 't', 'a',
+		8, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
 	}
 
 	err := os.WriteFile(filePath, header, 0644)

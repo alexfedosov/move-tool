@@ -9,7 +9,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 )
 
 func createFolderIfNotExist(basePath string, folderName string) (path string, err error) {
@@ -31,29 +30,45 @@ func archivePresetBundle(presetName string, directory string, output string) err
 	defer zipFile.Close()
 	zipWriter := zip.NewWriter(zipFile)
 	defer zipWriter.Close()
-	err = filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		relativePath := strings.TrimPrefix(path, fmt.Sprintf("%s/", directory))
-		if info.IsDir() {
-			return nil
-		}
-		zipFileWriter, err := zipWriter.Create(relativePath)
-		if err != nil {
-			return err
-		}
-		file, err := os.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		_, err = io.Copy(zipFileWriter, file)
-		if err != nil {
-			return err
-		}
+
+	archiver := presetBundleArchiver{
+		sourceDirectory: directory,
+		zipWriter:       zipWriter,
+	}
+	return filepath.Walk(directory, archiver.addPath)
+}
+
+type presetBundleArchiver struct {
+	sourceDirectory string
+	zipWriter       *zip.Writer
+}
+
+func (a presetBundleArchiver) addPath(filePath string, info os.FileInfo, walkErr error) error {
+	if walkErr != nil {
+		return walkErr
+	}
+	if info.IsDir() {
 		return nil
-	})
+	}
+	return a.copyFile(filePath)
+}
+
+func (a presetBundleArchiver) copyFile(filePath string) error {
+	relativePath, err := filepath.Rel(a.sourceDirectory, filePath)
+	if err != nil {
+		return err
+	}
+	zipFileWriter, err := a.zipWriter.Create(relativePath)
+	if err != nil {
+		return err
+	}
+	file, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(zipFileWriter, file)
 	return err
 }
 

@@ -6,8 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestNewDrumSampler verifies that a new DrumSampler is created with the correct initial values
-// including kind, empty sample URI, and nil parameters.
 func TestNewDrumSampler(t *testing.T) {
 	sampler := NewDrumSampler()
 
@@ -16,22 +14,27 @@ func TestNewDrumSampler(t *testing.T) {
 	assert.Nil(t, sampler.Parameters, "Parameters should be nil initially")
 }
 
-// TestDrumSamplerWithSample verifies that adding a sample to a DrumSampler works correctly
-// by setting the SampleURI and initializing parameters based on sample duration.
 func TestDrumSamplerWithSample(t *testing.T) {
 	sampler := NewDrumSampler()
-	filePath := "test/sample.wav"
-	duration := 2000.0
-
-	audioFile := AudioFile{
-		FilePath: &filePath,
-		Duration: duration,
-	}
+	audioFile := sampleAudioFile()
 
 	result := sampler.WithSample(audioFile)
 
+	assertSamplerWithSample(t, sampler, audioFile, result)
+}
+
+func sampleAudioFile() AudioFile {
+	filePath := "test/sample.wav"
+	return AudioFile{
+		FilePath: &filePath,
+		Duration: 2000.0,
+	}
+}
+
+func assertSamplerWithSample(t *testing.T, sampler *DrumSampler, audioFile AudioFile, result *DrumSampler) {
+	t.Helper()
 	assert.NotNil(t, sampler.DeviceData.SampleURI, "SampleURI should not be nil after setting sample")
-	assert.Equal(t, filePath, *sampler.DeviceData.SampleURI, "SampleURI should be set to the file path")
+	assert.Equal(t, *audioFile.FilePath, *sampler.DeviceData.SampleURI, "SampleURI should be set to the file path")
 	assert.NotNil(t, sampler.Parameters, "Parameters should be set")
 	assert.Same(t, sampler, result, "WithSample should return the same sampler instance")
 }

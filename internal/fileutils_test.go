@@ -13,12 +13,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestCreateFolderIfNotExist verifies that folders are correctly created when needed
-// and returns the correct path even when the folder already exists.
 func TestCreateFolderIfNotExist(t *testing.T) {
 	testDir, err := os.MkdirTemp("", "test-move-tool")
 	require.NoError(t, err, "Failed to create temp directory")
-	defer os.RemoveAll(testDir) // Clean up after test
+	defer os.RemoveAll(testDir)
 
 	folderName := "test-folder"
 	expectedPath := filepath.Join(testDir, folderName)
@@ -35,8 +33,6 @@ func TestCreateFolderIfNotExist(t *testing.T) {
 	assert.Equal(t, expectedPath, resultPath2, "Returned path should match expected path")
 }
 
-// TestRemoveDirectory verifies that directories are properly removed
-// including their contents (files and subdirectories).
 func TestRemoveDirectory(t *testing.T) {
 	testDir, err := os.MkdirTemp("", "test-move-tool")
 	require.NoError(t, err, "Failed to create temp directory")
@@ -52,13 +48,17 @@ func TestRemoveDirectory(t *testing.T) {
 	assert.True(t, os.IsNotExist(err), "Directory should be removed")
 }
 
-// TestWritePresetFile verifies that device presets are correctly serialized to JSON
-// and written to the filesystem at the expected location.
 func TestWritePresetFile(t *testing.T) {
-	testDir, err := os.MkdirTemp("", "test-move-tool")
-	require.NoError(t, err, "Failed to create temp directory")
-	defer os.RemoveAll(testDir) // Clean up after test
+	testDir := mustCreateTempDir(t, "test-move-tool")
+	preset := testDrumRackPreset()
 
+	err := writePresetFile(preset, testDir)
+	require.NoError(t, err, "writePresetFile should not fail")
+
+	assertPresetFileWritten(t, testDir)
+}
+
+func testDrumRackPreset() *ablmodels2.DevicePreset {
 	filePath := "TestPath"
 	audioFile := []ablmodels2.AudioFile{
 		{
@@ -66,13 +66,14 @@ func TestWritePresetFile(t *testing.T) {
 			Duration: 1000.0,
 		},
 	}
-	preset := ablmodels2.NewDrumRackDevicePresetWithSamples(audioFile)
+	return ablmodels2.NewDrumRackDevicePresetWithSamples(audioFile)
+}
 
-	err = writePresetFile(preset, testDir)
-	require.NoError(t, err, "writePresetFile should not fail")
+func assertPresetFileWritten(t *testing.T, testDir string) {
+	t.Helper()
 
 	presetPath := filepath.Join(testDir, "Preset.ablpreset")
-	_, err = os.Stat(presetPath)
+	_, err := os.Stat(presetPath)
 	assert.False(t, os.IsNotExist(err), "Preset file should exist at %s", presetPath)
 
 	content, err := os.ReadFile(presetPath)
@@ -81,40 +82,66 @@ func TestWritePresetFile(t *testing.T) {
 	assert.Greater(t, len(content), 0, "Preset file should not be empty")
 }
 
-// TestWritePresetFileWithInvalidDirectory verifies that the function correctly handles
-// errors when the output directory doesn't exist.
 func TestWritePresetFileWithInvalidDirectory(t *testing.T) {
-	// Use a non-existent directory
 	nonExistentDir := "/path/to/nonexistent/directory"
-
-	filePath := "TestPath"
-	audioFile := []ablmodels2.AudioFile{
-		{
-			FilePath: &filePath,
-			Duration: 1000.0,
-		},
-	}
-	preset := ablmodels2.NewDrumRackDevicePresetWithSamples(audioFile)
+	preset := testDrumRackPreset()
 
 	err := writePresetFile(preset, nonExistentDir)
 
-	// Verify that the function returns an error
 	assert.Error(t, err, "writePresetFile should fail with non-existent directory")
 }
 
-// TestArchivePresetBundle verifies that directories are correctly zipped into preset bundles
-// with the expected file structure and naming convention.
 func TestArchivePresetBundle(t *testing.T) {
-	sourceDir, err := os.MkdirTemp("", "test-source")
-	require.NoError(t, err, "Failed to create source directory")
-	defer os.RemoveAll(sourceDir)
+	fixture := newPresetBundleFixture(t)
+	presetName := "test_preset"
 
-	outputDir, err := os.MkdirTemp("", "test-output")
-	require.NoError(t, err, "Failed to create output directory")
-	defer os.RemoveAll(outputDir)
+	reader := fixture.archivePresetBundle(t, presetName)
+	defer reader.Close()
 
+	assertArchiveFiles(t, reader, fixture.TestFiles, fixture.TestContent)
+}
+
+type presetBundleFixture struct {
+	SourceDir   string
+	OutputDir   string
+	TestFiles   []string
+	TestContent []byte
+}
+
+func newPresetBundleFixture(t *testing.T) presetBundleFixture {
+	t.Helper()
+
+	sourceDir := mustCreateTempDir(t, "test-source")
+	outputDir := mustCreateTempDir(t, "test-output")
 	testFiles := []string{"test1.txt", "test2.txt", "subfolder/test3.txt"}
 	testContent := []byte("test content")
+	writeTestFiles(t, sourceDir, testFiles, testContent)
+
+	return presetBundleFixture{
+		SourceDir:   sourceDir,
+		OutputDir:   outputDir,
+		TestFiles:   testFiles,
+		TestContent: testContent,
+	}
+}
+
+func (f presetBundleFixture) archivePresetBundle(t *testing.T, presetName string) *zip.ReadCloser {
+	t.Helper()
+
+	err := archivePresetBundle(presetName, f.SourceDir, f.OutputDir)
+	require.NoError(t, err, "archivePresetBundle should not fail")
+
+	zipPath := filepath.Join(f.OutputDir, presetName+".ablpresetbundle")
+	_, err = os.Stat(zipPath)
+	assert.False(t, os.IsNotExist(err), "Archive file should exist at %s", zipPath)
+
+	reader, err := zip.OpenReader(zipPath)
+	require.NoError(t, err, "Failed to open zip file")
+	return reader
+}
+
+func writeTestFiles(t *testing.T, sourceDir string, testFiles []string, testContent []byte) {
+	t.Helper()
 
 	for _, filename := range testFiles {
 		filePath := filepath.Join(sourceDir, filename)
@@ -128,67 +155,60 @@ func TestArchivePresetBundle(t *testing.T) {
 		err := os.WriteFile(filePath, testContent, 0644)
 		require.NoError(t, err, "Failed to create test file %s", filePath)
 	}
+}
 
-	presetName := "test_preset"
-	err = archivePresetBundle(presetName, sourceDir, outputDir)
-	require.NoError(t, err, "archivePresetBundle should not fail")
+func assertArchiveFiles(t *testing.T, reader *zip.ReadCloser, testFiles []string, testContent []byte) {
+	t.Helper()
 
-	zipPath := filepath.Join(outputDir, presetName+".ablpresetbundle")
-	_, err = os.Stat(zipPath)
-	assert.False(t, os.IsNotExist(err), "Archive file should exist at %s", zipPath)
-
-	// Verify the contents of the archive
-	extractDir, err := os.MkdirTemp("", "test-extract")
-	require.NoError(t, err, "Failed to create extraction directory")
-	defer os.RemoveAll(extractDir)
-
-	// Open the zip file
-	reader, err := zip.OpenReader(zipPath)
-	require.NoError(t, err, "Failed to open zip file")
-	defer reader.Close()
-
-	// Check that all expected files are in the archive
 	var foundFiles []string
 	for _, file := range reader.File {
 		foundFiles = append(foundFiles, file.Name)
-
-		// Extract and verify content of each file
-		rc, err := file.Open()
-		require.NoError(t, err, "Failed to open file in archive")
-
-		content, err := io.ReadAll(rc)
-		require.NoError(t, err, "Failed to read file content")
-		rc.Close()
-
-		// Verify content for non-directory entries
-		if !strings.HasSuffix(file.Name, "/") {
-			assert.Equal(t, testContent, content, "File content should match for %s", file.Name)
-		}
+		assertArchiveFileContent(t, file, testContent)
 	}
 
-	// Verify all expected files are in the archive
+	assertExpectedArchiveFiles(t, foundFiles, testFiles)
+}
+
+func assertArchiveFileContent(t *testing.T, file *zip.File, testContent []byte) {
+	t.Helper()
+
+	if strings.HasSuffix(file.Name, "/") {
+		return
+	}
+
+	rc, err := file.Open()
+	require.NoError(t, err, "Failed to open file in archive")
+	defer rc.Close()
+
+	content, err := io.ReadAll(rc)
+	require.NoError(t, err, "Failed to read file content")
+
+	assert.Equal(t, testContent, content, "File content should match for %s", file.Name)
+}
+
+func assertExpectedArchiveFiles(t *testing.T, foundFiles []string, testFiles []string) {
+	t.Helper()
+
 	for _, expectedFile := range testFiles {
 		assert.Contains(t, foundFiles, expectedFile, "Archive should contain %s", expectedFile)
 	}
 }
 
-// TestArchivePresetBundleWithInvalidOutputDir verifies that the function correctly handles
-// errors when the output directory doesn't exist.
 func TestArchivePresetBundleWithInvalidOutputDir(t *testing.T) {
-	sourceDir, err := os.MkdirTemp("", "test-source")
-	require.NoError(t, err, "Failed to create source directory")
-	defer os.RemoveAll(sourceDir)
+	sourceDir := sourceDirWithTestFile(t)
 
-	// Create a test file in the source directory
+	err := archivePresetBundle("test_preset", sourceDir, "/path/to/nonexistent/directory")
+
+	assert.Error(t, err, "archivePresetBundle should fail with non-existent output directory")
+}
+
+func sourceDirWithTestFile(t *testing.T) string {
+	t.Helper()
+
+	sourceDir := mustCreateTempDir(t, "test-source")
 	testFilePath := filepath.Join(sourceDir, "test.txt")
-	err = os.WriteFile(testFilePath, []byte("test content"), 0644)
+	err := os.WriteFile(testFilePath, []byte("test content"), 0644)
 	require.NoError(t, err, "Failed to create test file")
 
-	// Use a non-existent output directory
-	nonExistentDir := "/path/to/nonexistent/directory"
-
-	err = archivePresetBundle("test_preset", sourceDir, nonExistentDir)
-
-	// Verify that the function returns an error
-	assert.Error(t, err, "archivePresetBundle should fail with non-existent output directory")
+	return sourceDir
 }
