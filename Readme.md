@@ -2,6 +2,12 @@
 
 A simple CLI for slicing long samples into Ableton Note / Ableton Move presets
 
+**You might not need this tool anymore!**
+
+⚠️⚠️⚠️ Ableton Move can already do slicing natively; see the manual: https://www.ableton.com/en/move/manual/#sample-slicing 
+
+
+
 ## Quick Start for Non-Developers
 
 ### Using Move Tool
