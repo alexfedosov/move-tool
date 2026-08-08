@@ -7,8 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestNewDevice verifies that a new Device is created with the correct initial values
-// and that all fields are properly initialized.
 func TestNewDevice(t *testing.T) {
 	kind := "testDevice"
 	device := NewDevice(kind)
@@ -21,8 +19,6 @@ func TestNewDevice(t *testing.T) {
 	assert.Empty(t, device.ReturnChains, "ReturnChains should be empty")
 }
 
-// TestDeviceAddChain verifies that adding a chain to a device works correctly
-// and that the chain is properly stored and retrievable.
 func TestDeviceAddChain(t *testing.T) {
 	device := NewDevice("testDevice")
 
@@ -40,8 +36,6 @@ func TestDeviceAddChain(t *testing.T) {
 	assert.Equal(t, chain.Name, addedChain.Name, "Chain name should match")
 }
 
-// TestDeviceAddReturnChain verifies that adding a return chain to a device works correctly
-// and that the return chain is properly stored in the ReturnChains collection.
 func TestDeviceAddReturnChain(t *testing.T) {
 	device := NewDevice("testDevice")
 
@@ -59,8 +53,6 @@ func TestDeviceAddReturnChain(t *testing.T) {
 	assert.Equal(t, returnChain.Name, addedChain.Name, "Return chain name should match")
 }
 
-// TestDeviceWithParameters verifies that setting parameters on a device works correctly
-// and that the device instance is returned for method chaining.
 func TestDeviceWithParameters(t *testing.T) {
 	device := NewDevice("testDevice")
 

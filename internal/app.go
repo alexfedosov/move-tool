@@ -27,42 +27,56 @@ func SliceSampleIntoDrumRack(inputFilePath string, outputFolderPath string, numb
 		return err
 	}
 
-	var presetName string
-	if customPresetName != "" {
-		presetName = customPresetName
-	} else {
-		presetName = strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
-		presetName = sanitizePresetName(presetName)
-	}
-
-	presetFolderPath, err := createFolderIfNotExist(outputFolderPath, presetName)
+	workspace, err := preparePresetWorkspace(outputFolderPath, customPresetName)
 	if err != nil {
 		return err
 	}
-	samplesFolderPath, err := createFolderIfNotExist(presetFolderPath, "Samples")
-	if err != nil {
-		return err
-	}
-	samples, err := writeAudioFileSlices(inputFilePath, samplesFolderPath, numberOfSlices, presetName)
+	samples, err := writeAudioFileSlices(inputFilePath, workspace.SamplesFolderPath, numberOfSlices, workspace.PresetName)
 	if err != nil {
 		return err
 	}
 
 	preset := ablmodels.NewDrumRackDevicePresetWithSamples(*samples)
+	return writeDrumRackPresetBundle(preset, workspace, outputFolderPath)
+}
 
-	err = writePresetFile(preset, presetFolderPath)
+type presetWorkspace struct {
+	PresetName        string
+	PresetFolderPath  string
+	SamplesFolderPath string
+}
+
+func preparePresetWorkspace(outputFolderPath string, customPresetName string) (presetWorkspace, error) {
+	presetName := drumRackPresetName(customPresetName)
+	presetFolderPath, err := createFolderIfNotExist(outputFolderPath, presetName)
 	if err != nil {
+		return presetWorkspace{}, err
+	}
+	samplesFolderPath, err := createFolderIfNotExist(presetFolderPath, "Samples")
+	if err != nil {
+		return presetWorkspace{}, err
+	}
+	return presetWorkspace{
+		PresetName:        presetName,
+		PresetFolderPath:  presetFolderPath,
+		SamplesFolderPath: samplesFolderPath,
+	}, nil
+}
+
+func drumRackPresetName(customPresetName string) string {
+	if customPresetName != "" {
+		return customPresetName
+	}
+	generatedName := strings.ToLower(fmt.Sprintf("%s_%s", gofakeit.HipsterWord(), gofakeit.AdverbPlace()))
+	return sanitizePresetName(generatedName)
+}
+
+func writeDrumRackPresetBundle(preset *ablmodels.DevicePreset, workspace presetWorkspace, outputFolderPath string) error {
+	if err := writePresetFile(preset, workspace.PresetFolderPath); err != nil {
 		return err
 	}
-	err = archivePresetBundle(presetName, presetFolderPath, outputFolderPath)
-	if err != nil {
+	if err := archivePresetBundle(workspace.PresetName, workspace.PresetFolderPath, outputFolderPath); err != nil {
 		return err
 	}
-
-	err = removeDirectory(presetFolderPath)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return removeDirectory(workspace.PresetFolderPath)
 }
